@@ -10,12 +10,12 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-ckb-hash = "=0.115.0-rc2"
-ckb-chain-spec = "=0.115.0-rc2"
-ckb-jsonrpc-types = "=0.115.0-rc2"
+ckb-hash = {git = "https://github.com/libraries/ckb.git",branch = "disable_isa_a",package="ckb-hash"}
+ckb-chain-spec = {git = "https://github.com/libraries/ckb.git",branch = "disable_isa_a",package="ckb-chain-spec"}
+ckb-jsonrpc-types = {git = "https://github.com/libraries/ckb.git",branch = "disable_isa_a",package="ckb-jsonrpc-types"}
 ckb-mock-tx-types = { path = "../ckb-mock-tx-types", version = "0.115.0-rc2" }
-ckb-script = { version = "=0.115.0-rc2", default-features = false }
-ckb-types = "=0.115.0-rc2"
+ckb-script = {git = "https://github.com/libraries/ckb.git",branch = "disable_isa_a",package="ckb-script",default-features = false}
+ckb-types = {git = "https://github.com/libraries/ckb.git",branch = "disable_isa_a",package="ckb-types"}
 ckb-vm = "=0.24.9"
 hex = "0.4"
 regex = "1"
