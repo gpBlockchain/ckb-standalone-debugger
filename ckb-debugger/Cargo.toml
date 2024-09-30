@@ -16,7 +16,7 @@ clap = "2.33.0"
 ckb-chain-spec = "=0.118.0"
 ckb-hash = "=0.118.0"
 ckb-jsonrpc-types = "=0.118.0"
-ckb-mock-tx-types = { path = "../ckb-mock-tx-types", version = "0.118.0" }
+ckb-mock-tx-types = "=0.118.0"
 ckb-script = { version = "=0.118.0", default-features = false, features = ["flatmemory"] }
 ckb-traits = "=0.118.0"
 ckb-types = "=0.118.0"
