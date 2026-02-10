@@ -10,6 +10,9 @@ const READ: u64 = 2606;
 const INHERITED_FD: u64 = 2607;
 const CLOSE: u64 = 2608;
 
+/// Maximum read chunk size for a single IPC read syscall.
+const MAX_READ_CHUNK_SIZE: usize = 32 * 1024;
+
 /// Fixed file descriptor values for the IPC reader and writer.
 const READER_FD: u64 = 0;
 const WRITER_FD: u64 = 1;
@@ -114,7 +117,7 @@ impl<Mac: SupportMachine> Syscalls<Mac> for IpcRead {
             machine.set_register(A0, Mac::REG::from_u8(7));
             return Ok(true);
         }
-        let actual = length.min(remaining).min(32 * 1024);
+        let actual = length.min(remaining).min(MAX_READ_CHUNK_SIZE);
         let start = state.request_pos;
         let end = start + actual;
         machine.memory_mut().store_bytes(buffer_addr.to_u64(), &state.request_data[start..end])?;

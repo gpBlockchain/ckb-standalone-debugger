@@ -165,9 +165,15 @@ fn ipc_call_inner(
         .find_script_group(*script_group_type, script_hash)
         .ok_or_else(|| format!("Script group not found for hash: {:?}", script_hash))?;
     let mut scheduler = verifier.create_scheduler(script_group)?;
-    let _ = scheduler.run(ckb_script::RunMode::LimitCycles(max_cycle));
+    let run_result = scheduler.run(ckb_script::RunMode::LimitCycles(max_cycle));
 
     let state = ipc_state.lock().map_err(|e| e.to_string())?;
+    if state.response_data.is_empty() {
+        if let Err(e) = run_result {
+            return Err(format!("Script execution failed with no IPC response: {}", e).into());
+        }
+        return Err("Script exited without producing an IPC response".into());
+    }
     let mut cursor = std::io::Cursor::new(&state.response_data);
     let resp = ResponsePacket::read_from(&mut cursor)?;
 
