@@ -23,7 +23,7 @@ mod syscall_random;
 mod syscall_stdio;
 mod syscall_timestamp;
 
-pub use api::{ipc_call, run, run_json};
+pub use api::{execute_script, execute_script_with_mock_tx, ipc_call, run, run_json};
 #[cfg(target_family = "unix")]
 pub use arch_unix::{self as arch};
 #[cfg(all(target_family = "wasm", target_os = "unknown"))]

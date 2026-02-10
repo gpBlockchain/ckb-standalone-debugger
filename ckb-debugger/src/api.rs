@@ -219,3 +219,271 @@ pub fn ipc_call(mock_tx: &str, script_group_type: &str, script_hash: &str, max_c
         Err(e) => serde_json::to_string(&serde_json::json!({"error": e})).unwrap(),
     }
 }
+
+/// Execute a script binary directly with an IPC request, without needing a mock_tx.
+/// A minimal mock transaction is created internally to host the binary.
+///
+/// # Arguments
+/// * `binary` - The compiled CKB RISC-V script binary
+/// * `args` - Hex-encoded script args (with or without 0x prefix)
+/// * `json_request` - JSON string of an IPC request with fields: version, method_id, payload_format, payload
+///
+/// # Returns
+/// JSON string of the IPC response
+#[wasm_bindgen]
+pub fn execute_script(binary: &[u8], args: &str, json_request: &str) -> String {
+    let result = || -> Result<IpcResponseJson, String> {
+        let ipc_req: IpcRequestJson = serde_json::from_str(json_request).map_err(|e| e.to_string())?;
+
+        // Compute blake2b hash of binary for code_hash
+        let binary_hash = ckb_hash::blake2b_256(binary);
+        let code_hash_hex = format!("0x{}", hex::encode(&binary_hash));
+        let cell_dep_data_hex = format!("0x{}", hex::encode(binary));
+        let args_hex = if args.is_empty() {
+            "0x".to_string()
+        } else if args.starts_with("0x") {
+            args.to_string()
+        } else {
+            format!("0x{}", args)
+        };
+
+        // Build minimal mock_tx as string directly (avoids serde_json::json! macro issues)
+        // Use hash_type "data2" (CKB VM v2) for modern script support (IPC, spawn, etc.)
+        let mock_tx_str = format!(
+            r#"{{"mock_info":{{"inputs":[{{"input":{{"previous_output":{{"tx_hash":"0x0000000000000000000000000000000000000000000000000000000000000000","index":"0x0"}},"since":"0x0"}},"output":{{"capacity":"0x174876e800","lock":{{"code_hash":"{}","hash_type":"data2","args":"{}"}}}},"data":"0x"}}],"cell_deps":[{{"cell_dep":{{"out_point":{{"tx_hash":"0x0000000000000000000000000000000000000000000000000000000000000001","index":"0x0"}},"dep_type":"code"}},"output":{{"capacity":"0x174876e800","lock":{{"code_hash":"0x0000000000000000000000000000000000000000000000000000000000000000","hash_type":"data","args":"0x"}}}},"data":"{}"}}],"header_deps":[]}},"tx":{{"version":"0x0","cell_deps":[{{"out_point":{{"tx_hash":"0x0000000000000000000000000000000000000000000000000000000000000001","index":"0x0"}},"dep_type":"code"}}],"header_deps":[],"inputs":[{{"previous_output":{{"tx_hash":"0x0000000000000000000000000000000000000000000000000000000000000000","index":"0x0"}},"since":"0x0"}}],"outputs":[{{"capacity":"0x174876e800","lock":{{"code_hash":"0x0000000000000000000000000000000000000000000000000000000000000000","hash_type":"data","args":"0x"}}}}],"outputs_data":["0x"],"witnesses":["0x"]}}}}"#,
+            code_hash_hex, args_hex, cell_dep_data_hex
+        );
+
+        let repr: ReprMockTransaction = serde_json::from_str(&mock_tx_str).map_err(|e| {
+            format!("Failed to parse generated mock_tx: {} (code_hash={}, args={}, data_len={})",
+                e, code_hash_hex, args_hex, cell_dep_data_hex.len())
+        })?;
+        let mock_tx: MockTransaction = repr.into();
+
+        let script_hash = crate::misc::get_script_hash_by_index(
+            &mock_tx,
+            &ScriptGroupType::Lock,
+            "input",
+            0,
+        );
+        let max_cycle: Cycle = 70_000_000;
+
+        ipc_call_inner(&mock_tx, &ScriptGroupType::Lock, &script_hash, max_cycle, &ipc_req)
+            .map_err(|e| e.to_string())
+    }();
+
+    match result {
+        Ok(resp) => serde_json::to_string(&resp).unwrap(),
+        Err(e) => serde_json::to_string(&serde_json::json!({"error": e})).unwrap(),
+    }
+}
+
+/// Execute a script binary with an IPC request, using a mock_tx for full transaction context.
+/// The binary replaces the script at the specified cell position in the mock_tx.
+///
+/// # Arguments
+/// * `binary` - The compiled CKB RISC-V script binary
+/// * `args` - Hex-encoded script args (with or without 0x prefix, empty string for no override)
+/// * `json_request` - JSON string of an IPC request
+/// * `mock_tx_json` - JSON string of a mock transaction (ReprMockTransaction)
+/// * `cell_index` - Index of the cell containing the target script
+/// * `cell_type` - "input" or "output"
+/// * `script_group_type` - "lock" or "type"
+///
+/// # Returns
+/// JSON string of the IPC response
+#[wasm_bindgen]
+pub fn execute_script_with_mock_tx(
+    binary: &[u8],
+    args: &str,
+    json_request: &str,
+    mock_tx_json: &str,
+    cell_index: u32,
+    cell_type: &str,
+    script_group_type: &str,
+) -> String {
+    let result = || -> Result<IpcResponseJson, String> {
+        let ipc_req: IpcRequestJson = serde_json::from_str(json_request).map_err(|e| e.to_string())?;
+        let sgt: ScriptGroupType = serde_plain::from_str(script_group_type).map_err(|e| e.to_string())?;
+
+        // Parse mock_tx as JSON for manipulation
+        let mut mock_tx_value: Value = serde_json::from_str(mock_tx_json).map_err(|e| e.to_string())?;
+
+        // Compute new binary hash
+        let new_binary_hash = ckb_hash::blake2b_256(binary);
+        let new_binary_hex = format!("0x{}", hex::encode(binary));
+        let new_code_hash = format!("0x{}", hex::encode(&new_binary_hash));
+
+        // Helper to extract code_hash and hash_type from a script JSON object
+        fn extract_script_info(script: &Value, label: &str) -> Result<(String, String), String> {
+            if script.is_null() {
+                return Err(format!("{} is null", label));
+            }
+            let code_hash = script.get("code_hash")
+                .and_then(|v| v.as_str())
+                .ok_or_else(|| format!("{}: code_hash not found (script: {})", label, script))?
+                .to_string();
+            let hash_type = script.get("hash_type")
+                .and_then(|v| v.as_str())
+                .ok_or_else(|| format!("{}: hash_type not found (script: {})", label, script))?
+                .to_string();
+            Ok((code_hash, hash_type))
+        }
+
+        // Find the target script's code_hash and hash_type
+        let (old_code_hash, old_hash_type) = {
+            let mock_info = mock_tx_value.get("mock_info").ok_or("mock_info not found")?;
+            match (script_group_type, cell_type) {
+                ("lock", "input") => {
+                    let inputs = mock_info.get("inputs")
+                        .and_then(|v| v.as_array())
+                        .ok_or("inputs not found in mock_info")?;
+                    let cell = inputs.get(cell_index as usize)
+                        .ok_or_else(|| format!("cell index {} out of bounds (inputs has {} items)", cell_index, inputs.len()))?;
+                    let output = cell.get("output")
+                        .ok_or_else(|| format!("output not found at inputs[{}], available keys: {:?}",
+                            cell_index, cell.as_object().map(|o| o.keys().collect::<Vec<_>>())))?;
+                    let lock = output.get("lock")
+                        .ok_or_else(|| format!("lock script not found at inputs[{}].output, available keys: {:?}",
+                            cell_index, output.as_object().map(|o| o.keys().collect::<Vec<_>>())))?;
+                    extract_script_info(lock, &format!("inputs[{}].output.lock", cell_index))?
+                }
+                ("type", "input") => {
+                    let inputs = mock_info.get("inputs")
+                        .and_then(|v| v.as_array())
+                        .ok_or("inputs not found in mock_info")?;
+                    let cell = inputs.get(cell_index as usize)
+                        .ok_or_else(|| format!("cell index {} out of bounds (inputs has {} items)", cell_index, inputs.len()))?;
+                    let output = cell.get("output")
+                        .ok_or_else(|| format!("output not found at inputs[{}]", cell_index))?;
+                    let type_script = output.get("type")
+                        .ok_or_else(|| format!("type script not found at inputs[{}].output (this cell has no type script)", cell_index))?;
+                    extract_script_info(type_script, &format!("inputs[{}].output.type", cell_index))?
+                }
+                ("type", "output") => {
+                    let tx = mock_tx_value.get("tx").ok_or("tx not found")?;
+                    let outputs = tx.get("outputs")
+                        .and_then(|v| v.as_array())
+                        .ok_or("outputs not found in tx")?;
+                    let cell = outputs.get(cell_index as usize)
+                        .ok_or_else(|| format!("cell index {} out of bounds (outputs has {} items)", cell_index, outputs.len()))?;
+                    let type_script = cell.get("type")
+                        .ok_or_else(|| format!("type script not found at outputs[{}] (this cell has no type script)", cell_index))?;
+                    extract_script_info(type_script, &format!("outputs[{}].type", cell_index))?
+                }
+                _ => return Err(format!("Invalid script_group_type/cell_type: {}/{}", script_group_type, cell_type)),
+            }
+        };
+
+        // Replace binary in cell_deps based on hash_type
+        {
+            let cell_deps = mock_tx_value
+                .get_mut("mock_info")
+                .and_then(|v| v.get_mut("cell_deps"))
+                .and_then(|v| v.as_array_mut())
+                .ok_or("cell_deps not found")?;
+
+            match old_hash_type.as_str() {
+                "data" | "data1" | "data2" => {
+                    // Find cell_dep where blake2b(data) matches old code_hash
+                    for cell_dep in cell_deps.iter_mut() {
+                        let data = cell_dep.get("data").and_then(|v| v.as_str()).unwrap_or("0x");
+                        let data_clean = if data.starts_with("0x") { &data[2..] } else { data };
+                        if let Ok(data_bytes) = hex::decode(data_clean) {
+                            let data_hash = format!("0x{}", hex::encode(ckb_hash::blake2b_256(&data_bytes)));
+                            if data_hash == old_code_hash {
+                                cell_dep["data"] = Value::String(new_binary_hex.clone());
+                                break;
+                            }
+                        }
+                    }
+                }
+                "type" => {
+                    // For type hash, find cell_dep whose type script hash matches code_hash
+                    // Just replace the data, code_hash stays the same
+                    for cell_dep in cell_deps.iter_mut() {
+                        if let Some(output) = cell_dep.get("output") {
+                            if let Some(type_script) = output.get("type") {
+                                if !type_script.is_null() {
+                                    // Compute type script hash and compare
+                                    let ts_code_hash = type_script.get("code_hash").and_then(|v| v.as_str()).unwrap_or("");
+                                    let ts_hash_type = type_script.get("hash_type").and_then(|v| v.as_str()).unwrap_or("");
+                                    let ts_args = type_script.get("args").and_then(|v| v.as_str()).unwrap_or("0x");
+                                    if !ts_code_hash.is_empty() {
+                                        // Simple match: if this cell_dep has a type script, replace its data
+                                        cell_dep["data"] = Value::String(new_binary_hex.clone());
+                                        break;
+                                    }
+                                    let _ = (ts_hash_type, ts_args); // suppress unused warnings
+                                }
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+
+        // Update the script's code_hash for data hash types
+        if matches!(old_hash_type.as_str(), "data" | "data1" | "data2") {
+            let mock_info = mock_tx_value.get_mut("mock_info").ok_or("mock_info not found")?;
+            match (script_group_type, cell_type) {
+                ("lock", "input") => {
+                    mock_info["inputs"][cell_index as usize]["output"]["lock"]["code_hash"] =
+                        Value::String(new_code_hash.clone());
+                }
+                ("type", "input") => {
+                    mock_info["inputs"][cell_index as usize]["output"]["type"]["code_hash"] =
+                        Value::String(new_code_hash.clone());
+                }
+                ("type", "output") => {
+                    mock_tx_value["tx"]["outputs"][cell_index as usize]["type"]["code_hash"] =
+                        Value::String(new_code_hash.clone());
+                }
+                _ => {}
+            }
+        }
+
+        // Optionally override args
+        if !args.is_empty() {
+            let args_hex = if args.starts_with("0x") { args.to_string() } else { format!("0x{}", args) };
+            let mock_info = mock_tx_value.get_mut("mock_info").ok_or("mock_info not found")?;
+            match (script_group_type, cell_type) {
+                ("lock", "input") => {
+                    mock_info["inputs"][cell_index as usize]["output"]["lock"]["args"] =
+                        Value::String(args_hex);
+                }
+                ("type", "input") => {
+                    mock_info["inputs"][cell_index as usize]["output"]["type"]["args"] =
+                        Value::String(args_hex);
+                }
+                ("type", "output") => {
+                    mock_tx_value["tx"]["outputs"][cell_index as usize]["type"]["args"] =
+                        Value::String(args_hex);
+                }
+                _ => {}
+            }
+        }
+
+        // Convert to MockTransaction
+        let mock_tx_str = serde_json::to_string(&mock_tx_value).map_err(|e| e.to_string())?;
+        let repr: ReprMockTransaction = serde_json::from_str(&mock_tx_str).map_err(|e| e.to_string())?;
+        let mock_tx: MockTransaction = repr.into();
+
+        let script_hash = crate::misc::get_script_hash_by_index(
+            &mock_tx,
+            &sgt,
+            cell_type,
+            cell_index as usize,
+        );
+        let max_cycle: Cycle = 70_000_000;
+
+        ipc_call_inner(&mock_tx, &sgt, &script_hash, max_cycle, &ipc_req)
+            .map_err(|e| e.to_string())
+    }();
+
+    match result {
+        Ok(resp) => serde_json::to_string(&resp).unwrap(),
+        Err(e) => serde_json::to_string(&serde_json::json!({"error": e})).unwrap(),
+    }
+}
