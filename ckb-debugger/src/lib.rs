@@ -8,6 +8,9 @@ pub mod arch_wasm_wasi;
 #[cfg(target_family = "windows")]
 pub mod arch_windows;
 mod instruction_decode;
+mod ipc_packet;
+mod ipc_syscall;
+mod ipc_vlq;
 mod machine_analyzer;
 mod misc;
 mod mock_tx_analyzer;
@@ -20,7 +23,7 @@ mod syscall_random;
 mod syscall_stdio;
 mod syscall_timestamp;
 
-pub use api::{run, run_json};
+pub use api::{execute_script, execute_script_with_mock_tx, ipc_call, run, run_json};
 #[cfg(target_family = "unix")]
 pub use arch_unix::{self as arch};
 #[cfg(all(target_family = "wasm", target_os = "unknown"))]
