@@ -15,7 +15,7 @@ use ckb_types::core::{Capacity, DepType, HeaderView, ScriptHashType, Transaction
 use ckb_types::packed::{Byte32, CellDep, CellInput, CellOutput, OutPoint, Script, ScriptOpt};
 use ckb_types::prelude::{Builder, Entity, Pack};
 use ckb_vm::cost_model::estimate_cycles;
-use ckb_vm::decoder::build_decoder;
+use ckb_vm::decoder::{DefaultDecoder, InstDecoder};
 use ckb_vm::error::Error;
 use ckb_vm::instructions::execute;
 use ckb_vm::{Bytes, CoreMachine, Register, SupportMachine};
@@ -610,7 +610,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             verifier_max_cycles,
         );
         let machine_builder =
-            ckb_vm::DefaultMachineBuilder::new(machine_core).instruction_cycle_func(Box::new(estimate_cycles));
+            ckb_vm::RustDefaultMachineBuilder::new(machine_core).instruction_cycle_func(Box::new(estimate_cycles));
         let mut machine = machine_builder.syscall(Box::new(machine_syscall)).build();
 
         machine.load_program(&machine_program_elf, machine_args.into_iter().map(Ok)).unwrap();
@@ -638,7 +638,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             verifier_max_cycles,
         );
         let machine_builder =
-            ckb_vm::DefaultMachineBuilder::new(machine_core).instruction_cycle_func(Box::new(estimate_cycles));
+            ckb_vm::RustDefaultMachineBuilder::new(machine_core).instruction_cycle_func(Box::new(estimate_cycles));
         let machine = machine_builder.syscall(Box::new(machine_syscall)).build();
         let mut machine = ckb_vm::machine::asm::AsmMachine::new(machine);
         machine.load_program(&machine_program_elf, machine_args.into_iter().map(Ok)).unwrap();
@@ -744,7 +744,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         #[cfg(feature = "asm")]
         let mut machine = machine_init_asm().machine;
         machine.set_running(true);
-        let mut decoder = build_decoder::<u64>(verifier_script_version.vm_isa(), verifier_script_version.vm_version());
+        let mut decoder = DefaultDecoder::new::<u64>(verifier_script_version.vm_isa(), verifier_script_version.vm_version());
         let mut step_result = Ok(());
         while machine.running() && step_result.is_ok() {
             let pc = machine.pc().to_u64();
