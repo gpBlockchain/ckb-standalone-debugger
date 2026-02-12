@@ -20,7 +20,7 @@ ckb-jsonrpc-types = "=1.0.0"
 ckb-script = { version = "=1.0.0", default-features = false, features = ["flatmemory"] }
 ckb-traits = "=1.0.0"
 ckb-types = "=1.0.0"
-ckb-vm = { version = "=0.24.14", default-features = false, features = ["pprof"] }
+ckb-vm = { git = "https://github.com/mohanson-fork/ckb-vm", branch = "asm_rv64im", default-features = false, features = ["pprof"] }
 
 # Crates defined in current workspace
 ckb-debugger = { path = "ckb-debugger", version = "1.0.0" }
@@ -60,3 +60,7 @@ serde_json = "1.0"
 serde_plain = "1.0"
 wasm-bindgen = "0.2.100"
 web-sys = { version = "0.3", features = ["Storage", "Window", "console"] }
+
+[patch.crates-io]
+ckb-vm = { git = "https://github.com/mohanson-fork/ckb-vm", branch = "asm_rv64im" }
+ckb-vm-definitions = { git = "https://github.com/mohanson-fork/ckb-vm", branch = "asm_rv64im" }
