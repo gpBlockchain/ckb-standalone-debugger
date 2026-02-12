@@ -410,7 +410,7 @@ pub fn quick_start(
     >::new(isa, ckb_vm::machine::VERSION2, 1 << 32);
     let mut builder =
         RustDefaultMachineBuilder::new(default_core_machine).instruction_cycle_func(Box::new(cost_model::estimate_cycles));
-    builder = syscalls.into_iter().fold(builder, |builder: RustDefaultMachineBuilder<_>, syscall| builder.syscall(syscall));
+    builder = syscalls.into_iter().fold(builder, |builder, syscall| builder.syscall(syscall));
     let default_machine = builder.build();
     let profile = Profile::new(&code).unwrap();
     let mut machine = PProfMachine::new(default_machine, profile);

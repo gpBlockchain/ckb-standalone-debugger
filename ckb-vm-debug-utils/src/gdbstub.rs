@@ -139,7 +139,9 @@ impl<R: Register + Debug + Eq + StdHash, M: SupportMachine + CoreMachine<REG = R
 
     fn step(&mut self) -> Option<VmEvent<M::REG>> {
         if self.machine.reset_signal() {
-            self.decoder.reset_instructions_cache().ok();
+            if let Err(e) = self.decoder.reset_instructions_cache() {
+                return Some(VmEvent::Error(e));
+            }
         }
         if !self.machine.running() {
             return Some(VmEvent::Exited(self.machine.exit_code() as u8));
