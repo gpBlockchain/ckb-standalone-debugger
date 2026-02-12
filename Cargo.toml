@@ -7,20 +7,27 @@ members = [
     "ckb-vm-pprof-converter",
     "ckb-vm-pprof-protos",
     "ckb-vm-signal-profiler",
+    "deps/ckb-vm-contrib/ckb-mock-tx-types",
+    "deps/ckb-vm-contrib/ckb-vm-fuzzing-utils",
+    "deps/ckb-vm-contrib/ckb-vm-syscall-tracer",
+    "deps/ckb-vm-contrib/protobuf-ckb-syscalls",
 ]
 
 [workspace.package]
 version = "1.0.0"
+license = "MIT"
+edition = "2024"
+authors = ["Nervos Core Dev <dev@nervos.org>"]
 
 [workspace.dependencies]
 # CKB dependencies
-ckb-chain-spec = "=1.0.0"
-ckb-hash = "=1.0.0"
-ckb-jsonrpc-types = "=1.0.0"
-ckb-script = { version = "=1.0.0", default-features = false, features = ["flatmemory"] }
-ckb-traits = "=1.0.0"
-ckb-types = "=1.0.0"
-ckb-vm = { version = "=0.24.14", default-features = false, features = ["pprof"] }
+ckb-chain-spec = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-hash = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-jsonrpc-types = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-script = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im", default-features = false, features = ["flatmemory"] }
+ckb-traits = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-types = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-vm = { git = "https://github.com/mohanson-fork/ckb-vm", branch = "asm_rv64im", default-features = false, features = ["pprof"] }
 
 # Crates defined in current workspace
 ckb-debugger = { path = "ckb-debugger", version = "1.0.0" }
@@ -30,33 +37,68 @@ ckb-vm-pprof-converter = { path = "ckb-vm-pprof-converter", version = "1.0.0" }
 ckb-vm-pprof-protos = { path = "ckb-vm-pprof-protos", version = "1.0.0" }
 ckb-vm-signal-profiler = { path = "ckb-vm-signal-profiler", version = "1.0.0" }
 
-# CKB VM contribs
-ckb-mock-tx-types = "1.0.0"
-ckb-vm-syscall-tracer = { version = "1.0.0", default-features = false }
-ckb-vm-fuzzing-utils = "1.0.0"
-protobuf-ckb-syscalls = "1.0.0"
+# CKB VM contribs (vendored from nervosnetwork/ckb-vm-contrib)
+ckb-mock-tx-types = { path = "deps/ckb-vm-contrib/ckb-mock-tx-types" }
+ckb-vm-syscall-tracer = { path = "deps/ckb-vm-contrib/ckb-vm-syscall-tracer", default-features = false }
+ckb-vm-fuzzing-utils = { path = "deps/ckb-vm-contrib/ckb-vm-fuzzing-utils" }
+protobuf-ckb-syscalls = { path = "deps/ckb-vm-contrib/protobuf-ckb-syscalls" }
 
 # Other common crates
 addr2line = "0.21"
 byteorder = "1"
 bytes = "1"
+ckb-std = { version = "=1.0.1", features = ["stub-syscalls"] }
+clap = { version = "4.5.40", features = ["cargo", "derive"] }
 env_logger = "0.11"
 gdbstub = "0.7"
 gdbstub_arch = "0.3"
 goblin = "0.4"
 hex = "0.4"
+int-enum = "1.2.0"
 libc = "0.2"
 log = "0.4.0"
 nix = { version = "0.30", features = ["fs", "signal"] }
+once_cell = "1.13.0"
 probe = "0.5"
+prost = "0.14.1"
+prost-build = "0.14.1"
 prost-reflect = { version = "0.16.0", features = ["derive", "text-format"] }
+prost-reflect-build = "0.16.0"
 protoc-bin-vendored = "3.1"
 protobuf-codegen = "3.7"
 protobuf = { version = "3.7", features = ["with-bytes"] }
 rand = "0.8.5"
-regex = "1"
+regex = { version = "1", default-features = false }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_plain = "1.0"
+spin = { version = "0.10.0", default-features = false, features = ["spin_mutex"] }
 wasm-bindgen = "0.2.100"
 web-sys = { version = "0.3", features = ["Storage", "Window", "console"] }
+
+[patch.crates-io]
+# CKB VM patches
+ckb-vm = { git = "https://github.com/mohanson-fork/ckb-vm", branch = "asm_rv64im" }
+ckb-vm-definitions = { git = "https://github.com/mohanson-fork/ckb-vm", branch = "asm_rv64im" }
+# CKB patches (transitive dependencies from the ckb repo)
+ckb-chain-spec = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-constant = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-crypto = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-dao-utils = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-error = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-fixed-hash = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-fixed-hash-core = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-fixed-hash-macros = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-gen-types = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-hash = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-jsonrpc-types = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-logger = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-occupied-capacity = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-occupied-capacity-core = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-occupied-capacity-macros = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-pow = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-rational = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-resource = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-script = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-traits = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }
+ckb-types = { git = "https://github.com/gpBlockchain/ckb", branch = "copilot/update-ckb-vm-to-asm-rv64im" }

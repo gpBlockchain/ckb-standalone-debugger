@@ -3,7 +3,7 @@ extern crate log;
 
 use bytes::Bytes;
 use ckb_vm::{
-    DefaultCoreMachine, DefaultMachineBuilder, ISA_B, ISA_IMC, ISA_MOP, SparseMemory, SupportMachine, WXorXMemory,
+    DefaultCoreMachine, ISA_B, ISA_IMC, ISA_MOP, RustDefaultMachineBuilder, SparseMemory, SupportMachine, WXorXMemory,
 };
 #[cfg(feature = "stdio")]
 use ckb_vm_debug_utils::Stdio;
@@ -37,7 +37,7 @@ fn main() {
                 1,
                 u64::max_value(),
             );
-            let machine_builder = DefaultMachineBuilder::new(machine_core);
+            let machine_builder = RustDefaultMachineBuilder::new(machine_core);
             #[cfg(feature = "stdio")]
             let mut machine = machine_builder.syscall(Box::new(Stdio::new(true))).build();
             #[cfg(not(feature = "stdio"))]

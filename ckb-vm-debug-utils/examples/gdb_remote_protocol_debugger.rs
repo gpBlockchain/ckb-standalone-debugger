@@ -5,7 +5,7 @@ use bytes::Bytes;
 use ckb_gdb_remote_protocol::process_packets_from;
 use ckb_vm::machine::VERSION2;
 use ckb_vm::{
-    DefaultCoreMachine, DefaultMachineBuilder, ISA_A, ISA_B, ISA_IMC, ISA_MOP, SparseMemory, SupportMachine,
+    DefaultCoreMachine, ISA_A, ISA_B, ISA_IMC, ISA_MOP, RustDefaultMachineBuilder, SparseMemory, SupportMachine,
     WXorXMemory,
 };
 use ckb_vm_debug_utils::GdbHandler;
@@ -38,7 +38,7 @@ fn main() {
                 VERSION2,
                 u64::max_value(),
             );
-            let machine_builder = DefaultMachineBuilder::new(machine_core);
+            let machine_builder = RustDefaultMachineBuilder::new(machine_core);
             #[cfg(feature = "stdio")]
             let mut machine = machine_builder.syscall(Box::new(Stdio::new(true))).build();
             #[cfg(not(feature = "stdio"))]

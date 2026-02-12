@@ -1,0 +1,17 @@
+[package]
+name = "ckb-vm-fuzzing-utils"
+description = "CKB VM fuzzing utils"
+version.workspace = true
+license.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+int-enum = "1.2.0"
+ckb-vm.workspace = true
+ckb-std.workspace = true
+regex.workspace = true
+
+[features]
+default = ["std"]
+std = ["regex/std"]
