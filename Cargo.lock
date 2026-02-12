@@ -270,7 +270,7 @@ checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 [[package]]
 name = "ckb-chain-spec"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "cacache",
  "ckb-constant",
@@ -292,7 +292,7 @@ dependencies = [
 [[package]]
 name = "ckb-constant"
 version = "1.0.1"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "phf 0.12.1",
 ]
@@ -300,7 +300,7 @@ dependencies = [
 [[package]]
 name = "ckb-crypto"
 version = "1.0.1"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-fixed-hash",
  "faster-hex",
@@ -312,7 +312,7 @@ dependencies = [
 [[package]]
 name = "ckb-dao-utils"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "byteorder",
  "ckb-error",
@@ -332,7 +332,7 @@ dependencies = [
  "ckb-script",
  "ckb-traits",
  "ckb-types",
- "ckb-vm 0.24.0",
+ "ckb-vm",
  "ckb-vm-debug-utils",
  "ckb-vm-fuzzing-utils",
  "ckb-vm-syscall-tracer",
@@ -362,7 +362,7 @@ dependencies = [
 [[package]]
 name = "ckb-error"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "anyhow",
  "ckb-occupied-capacity",
@@ -373,7 +373,7 @@ dependencies = [
 [[package]]
 name = "ckb-fixed-hash"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-fixed-hash-core",
  "ckb-fixed-hash-macros",
@@ -382,7 +382,7 @@ dependencies = [
 [[package]]
 name = "ckb-fixed-hash-core"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb_schemars",
  "faster-hex",
@@ -393,7 +393,7 @@ dependencies = [
 [[package]]
 name = "ckb-fixed-hash-macros"
 version = "1.0.1"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-fixed-hash-core",
  "proc-macro2",
@@ -404,7 +404,7 @@ dependencies = [
 [[package]]
 name = "ckb-gen-types"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "cfg-if",
  "ckb-error",
@@ -420,7 +420,7 @@ dependencies = [
 [[package]]
 name = "ckb-hash"
 version = "1.0.1"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "blake2b-ref",
  "blake2b-rs",
@@ -429,7 +429,7 @@ dependencies = [
 [[package]]
 name = "ckb-jsonrpc-types"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-types",
  "ckb_schemars",
@@ -442,7 +442,7 @@ dependencies = [
 [[package]]
 name = "ckb-logger"
 version = "1.0.1"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "log",
 ]
@@ -459,8 +459,6 @@ dependencies = [
 [[package]]
 name = "ckb-mock-tx-types"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08f05c40c36a5109007a3721cdf940153a19bafade295407df0bad5113a524e4"
 dependencies = [
  "ckb-jsonrpc-types",
  "ckb-traits",
@@ -471,7 +469,7 @@ dependencies = [
 [[package]]
 name = "ckb-occupied-capacity"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-occupied-capacity-core",
  "ckb-occupied-capacity-macros",
@@ -480,7 +478,7 @@ dependencies = [
 [[package]]
 name = "ckb-occupied-capacity-core"
 version = "1.0.1"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "serde",
 ]
@@ -488,7 +486,7 @@ dependencies = [
 [[package]]
 name = "ckb-occupied-capacity-macros"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-occupied-capacity-core",
  "quote",
@@ -498,7 +496,7 @@ dependencies = [
 [[package]]
 name = "ckb-pow"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "byteorder",
  "ckb-hash",
@@ -511,7 +509,7 @@ dependencies = [
 [[package]]
 name = "ckb-rational"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "numext-fixed-uint",
  "serde",
@@ -520,7 +518,7 @@ dependencies = [
 [[package]]
 name = "ckb-resource"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-system-scripts",
  "ckb-types",
@@ -534,16 +532,15 @@ dependencies = [
 [[package]]
 name = "ckb-script"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "byteorder",
  "ckb-chain-spec",
  "ckb-error",
  "ckb-hash",
- "ckb-logger",
  "ckb-traits",
  "ckb-types",
- "ckb-vm 0.24.0",
+ "ckb-vm",
  "faster-hex",
  "serde",
  "tokio",
@@ -578,7 +575,7 @@ dependencies = [
 [[package]]
 name = "ckb-traits"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "ckb-types",
 ]
@@ -586,7 +583,7 @@ dependencies = [
 [[package]]
 name = "ckb-types"
 version = "1.0.2"
-source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#3ebdfd4f06fae0ce3bed149b08fdc5fb3c82ea8c"
+source = "git+https://github.com/gpBlockchain/ckb?branch=copilot%2Fupdate-ckb-vm-to-asm-rv64im#a4f9af82127cc385fbe3676d0ecf7f1d1321a266"
 dependencies = [
  "bit-vec",
  "bytes",
@@ -614,28 +611,10 @@ dependencies = [
  "byteorder",
  "bytes",
  "cc",
- "ckb-vm-definitions 0.24.0",
+ "ckb-vm-definitions",
  "derive_more 1.0.0",
  "goblin 0.2.3",
  "goblin 0.4.0",
- "scroll",
- "serde",
-]
-
-[[package]]
-name = "ckb-vm"
-version = "0.24.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad137e2f1c9a363ce19a883a2113b1dfcc00a936945e34b62e3726c49e7171fb"
-dependencies = [
- "byteorder",
- "bytes",
- "cc",
- "ckb-vm-definitions 0.24.14",
- "derive_more 0.99.20",
- "goblin 0.2.3",
- "goblin 0.4.0",
- "rand 0.7.3",
  "scroll",
  "serde",
 ]
@@ -646,7 +625,7 @@ version = "1.0.0"
 dependencies = [
  "byteorder",
  "bytes",
- "ckb-vm 0.24.0",
+ "ckb-vm",
  "env_logger",
  "gdbstub",
  "gdbstub_arch",
@@ -664,22 +643,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "ckb-vm-definitions"
-version = "0.24.14"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b436017fd6676bea413d54e07a5a9cc1d7c4b5c02e4ab07d3527225a5de6677"
-dependencies = [
- "paste",
-]
-
-[[package]]
 name = "ckb-vm-fuzzing-utils"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c70ccf64c4ce6f95b0df26bc2e22609505b20cd0d44ea2837dae1fd851aa408"
 dependencies = [
  "ckb-std",
- "ckb-vm 0.24.14",
+ "ckb-vm",
  "int-enum",
  "regex",
 ]
@@ -689,7 +657,7 @@ name = "ckb-vm-pprof"
 version = "1.0.0"
 dependencies = [
  "addr2line",
- "ckb-vm 0.24.0",
+ "ckb-vm",
  "clap 2.34.0",
  "goblin 0.4.0",
 ]
@@ -717,7 +685,7 @@ name = "ckb-vm-signal-profiler"
 version = "1.0.0"
 dependencies = [
  "addr2line",
- "ckb-vm 0.24.0",
+ "ckb-vm",
  "ckb-vm-pprof-protos",
  "env_logger",
  "log",
@@ -728,8 +696,6 @@ dependencies = [
 [[package]]
 name = "ckb-vm-syscall-tracer"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19dcb8e4adb1003315e8181117a29b3d93e4f9144234d2950dc9af7368591992"
 dependencies = [
  "ckb-chain-spec",
  "ckb-mock-tx-types",
@@ -737,7 +703,7 @@ dependencies = [
  "ckb-std",
  "ckb-traits",
  "ckb-types",
- "ckb-vm 0.24.14",
+ "ckb-vm",
  "ckb-vm-fuzzing-utils",
  "clap 4.5.58",
  "hex",
@@ -837,12 +803,6 @@ checksum = "b05b61dc5112cbb17e4b6cd61790d9845d13888356391624cbe7e41efeac1e75"
 
 [[package]]
 name = "convert_case"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6245d59a3e82a7fc217c5828a6692dbc6dfb63a0c8c90495621f7b9d79704a0e"
-
-[[package]]
-name = "convert_case"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec182b0ca2f35d8fc196cf3404988fd8b8c739a4d270ff118a398feb0cbec1ca"
@@ -899,10 +859,8 @@ version = "0.99.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6edb4b64a43d977b8e99788fe3a04d483834fba1215a7e02caa415b626497f7f"
 dependencies = [
- "convert_case 0.4.0",
  "proc-macro2",
  "quote",
- "rustc_version",
  "syn 2.0.115",
 ]
 
@@ -921,7 +879,7 @@ version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cb7330aeadfbe296029522e6c40f315320aba36fc43a5b3632f3795348f3bd22"
 dependencies = [
- "convert_case 0.6.0",
+ "convert_case",
  "proc-macro2",
  "quote",
  "syn 2.0.115",
@@ -1945,11 +1903,9 @@ dependencies = [
 [[package]]
 name = "protobuf-ckb-syscalls"
 version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "944f494b54e4edbe1021bef90e621d59fa72171f299800b53090dccfddd6814a"
 dependencies = [
  "ckb-std",
- "ckb-vm 0.24.14",
+ "ckb-vm",
  "ckb-vm-fuzzing-utils",
  "once_cell",
  "prost",

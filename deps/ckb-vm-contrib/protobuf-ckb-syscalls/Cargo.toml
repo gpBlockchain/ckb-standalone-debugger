@@ -1,0 +1,28 @@
+[package]
+name = "protobuf-ckb-syscalls"
+description = "Provides protobuf format for syscalls"
+version.workspace = true
+license.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+ckb-vm-fuzzing-utils.workspace = true
+ckb-vm.workspace = true
+ckb-std.workspace = true
+
+once_cell.workspace = true
+prost.workspace = true
+prost-reflect.workspace = true
+spin.workspace = true
+
+[build-dependencies]
+prost-build.workspace = true
+prost-reflect-build.workspace = true
+
+[features]
+default = ["std", "stub-c-syscalls"]
+std = []
+stub-c-syscalls = ["ckb-std/stub-c-syscalls"]
+text-format = []
+print-debug-messages = ["std"]
