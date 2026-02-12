@@ -1,7 +1,7 @@
 use byteorder::{ByteOrder, LittleEndian};
 use bytes::{BufMut, Bytes, BytesMut};
 use ckb_vm::{
-    Error, Memory, RISCV_PAGES, RISCV_PAGESIZE, Register, SupportMachine, Syscalls,
+    Error, Memory, RISCV_PAGESIZE, Register, SupportMachine, Syscalls,
     memory::{FLAG_EXECUTABLE, FLAG_WXORX_BIT},
     registers::A7,
 };
@@ -59,7 +59,7 @@ impl<Mac: SupportMachine> Syscalls<Mac> for ElfDumper {
         let mut segments: Vec<Segment> = vec![];
         let mut page = 0;
         // Extract all non-empty data from memory
-        while page < RISCV_PAGES as u64 {
+        while page < machine.memory().memory_pages() as u64 {
             let mut start = page * RISCV_PAGESIZE as u64;
             let end = (page + 1) * RISCV_PAGESIZE as u64;
 

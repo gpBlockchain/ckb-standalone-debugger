@@ -4,8 +4,8 @@ use ckb_vm::{
     Bytes, DefaultMachineRunner, Error as VMError, ISA_A, ISA_B, ISA_IMC, ISA_MOP, Memory, Register, SupportMachine,
     Syscalls,
     machine::{
-        DefaultMachineBuilder, VERSION2,
-        asm::{AsmCoreMachine, AsmMachine},
+        asm::{AsmCoreMachine, AsmMachine, AsmDefaultMachineBuilder},
+        VERSION2,
     },
     registers::{A0, A7},
 };
@@ -59,7 +59,7 @@ fn main() {
 
     let asm_core =
         <Box<AsmCoreMachine> as SupportMachine>::new(ISA_IMC | ISA_A | ISA_B | ISA_MOP, VERSION2, u64::max_value());
-    let core = DefaultMachineBuilder::new(asm_core).syscall(Box::new(Debugger::new())).build();
+    let core = AsmDefaultMachineBuilder::new(asm_core).syscall(Box::new(Debugger::new())).build();
     let mut machine = Box::pin(AsmMachine::new(core));
 
     ckb_vm_signal_profiler::start_profiler("simple.profile", &machine, &code, 99).expect("profiler start failure");

@@ -1,6 +1,6 @@
 use ckb_vm::{
     Bytes, Error, Memory, Register,
-    decoder::{Decoder, build_decoder},
+    decoder::{DefaultDecoder, InstDecoder},
     instructions::{execute, extract_opcode, insts},
     machine::{CoreMachine, DefaultMachine, Machine, SupportMachine},
     registers::A7,
@@ -63,7 +63,7 @@ impl<R: StdHash + Eq> FilteredSyscalls<R> {
 pub struct GdbStubHandler<M: SupportMachine, A> {
     exec_mode: ExecMode<M::REG>,
     machine: DefaultMachine<M>,
-    decoder: Decoder,
+    decoder: DefaultDecoder,
     breakpoints: Vec<M::REG>,
     catch_syscalls: FilteredSyscalls<M::REG>,
     watchpoints: Vec<(M::REG, WatchKind)>,
@@ -88,7 +88,7 @@ enum VmEvent<R: Register> {
 
 impl<R: Register, M: SupportMachine + CoreMachine<REG = R>, A: Arch<Usize = R>> GdbStubHandler<M, A> {
     pub fn new(machine: DefaultMachine<M>) -> Self {
-        let decoder = build_decoder::<M::REG>(machine.isa(), machine.version());
+        let decoder = DefaultDecoder::new::<M::REG>(machine.isa(), machine.version());
         Self {
             machine,
             decoder,
@@ -139,7 +139,7 @@ impl<R: Register + Debug + Eq + StdHash, M: SupportMachine + CoreMachine<REG = R
 
     fn step(&mut self) -> Option<VmEvent<M::REG>> {
         if self.machine.reset_signal() {
-            self.decoder.reset_instructions_cache()
+            self.decoder.reset_instructions_cache().ok();
         }
         if !self.machine.running() {
             return Some(VmEvent::Exited(self.machine.exit_code() as u8));
@@ -543,11 +543,7 @@ impl<
 impl<R: Register, M: SupportMachine + CoreMachine<REG = R>, A> Memory for GdbStubHandler<M, A> {
     type REG = R;
 
-    fn new() -> Self {
-        todo!()
-    }
-
-    fn new_with_memory(_: usize) -> Self {
+    fn new(_memory_size: usize) -> Self {
         todo!()
     }
 

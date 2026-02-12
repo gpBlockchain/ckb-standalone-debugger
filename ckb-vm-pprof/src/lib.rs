@@ -3,9 +3,9 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use ckb_vm::decoder::{Decoder, build_decoder};
+use ckb_vm::decoder::{DefaultDecoder, InstDecoder};
 use ckb_vm::instructions::instruction_length;
-use ckb_vm::machine::{DefaultMachine, DefaultMachineBuilder, VERSION0};
+use ckb_vm::machine::{DefaultMachine, RustDefaultMachineBuilder, VERSION0};
 use ckb_vm::memory::Memory;
 use ckb_vm::registers::{A0, SP};
 use ckb_vm::{
@@ -191,7 +191,7 @@ impl Profile {
     fn step<R: Register, M: Memory<REG = R>, Inner: SupportMachine<REG = R, MEM = M>>(
         &mut self,
         machine: &mut DefaultMachine<Inner>,
-        decoder: &mut Decoder,
+        decoder: &mut DefaultDecoder,
     ) -> Result<(), Error> {
         let pc = machine.pc().to_u64();
         if !self.disable_overlapping_detection {
@@ -380,11 +380,11 @@ impl<R: Register, M: Memory<REG = R>, Inner: SupportMachine<REG = R, MEM = M>> P
         if self.isa() & ISA_MOP != 0 && self.version() == VERSION0 {
             return Err(Error::InvalidVersion);
         }
-        let mut decoder = build_decoder::<Inner::REG>(self.isa(), self.version());
+        let mut decoder = DefaultDecoder::new::<Inner::REG>(self.isa(), self.version());
         self.machine.set_running(true);
         while self.machine.running() {
             if self.machine.reset_signal() {
-                decoder.reset_instructions_cache();
+                decoder.reset_instructions_cache()?;
                 self.profile = Profile::new(&self.machine.code()).unwrap();
             }
             self.profile.step(&mut self.machine, &mut decoder)?;
@@ -409,8 +409,8 @@ pub fn quick_start(
         ckb_vm::memory::wxorx::WXorXMemory<ckb_vm::memory::sparse::SparseMemory<u64>>,
     >::new(isa, ckb_vm::machine::VERSION2, 1 << 32);
     let mut builder =
-        DefaultMachineBuilder::new(default_core_machine).instruction_cycle_func(Box::new(cost_model::estimate_cycles));
-    builder = syscalls.into_iter().fold(builder, |builder, syscall| builder.syscall(syscall));
+        RustDefaultMachineBuilder::new(default_core_machine).instruction_cycle_func(Box::new(cost_model::estimate_cycles));
+    builder = syscalls.into_iter().fold(builder, |builder: RustDefaultMachineBuilder<_>, syscall| builder.syscall(syscall));
     let default_machine = builder.build();
     let profile = Profile::new(&code).unwrap();
     let mut machine = PProfMachine::new(default_machine, profile);
